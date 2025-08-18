@@ -9,6 +9,8 @@ import {
 } from './dto/giftcard.dto';
 import { DateTime } from 'luxon';
 import { utilResponse } from 'src/utils/utilResponse';
+import { plainToInstance } from 'class-transformer';
+import { getGiftcardDto } from './dto/getGiftcard.dto';
 
 @Injectable()
 export class GiftcardService {
@@ -127,7 +129,7 @@ export class GiftcardService {
         SELECT * FROM datos ORDER BY gif_nombre  
       `);
 
-      return giftcards;
+      return plainToInstance(getGiftcardDto, giftcards);
     } catch (error) {
       if (error.driverError) {
         throw new HttpException(
@@ -151,7 +153,7 @@ export class GiftcardService {
           'gif.gifExpiracion',
           'gif.usuUuid',
         ])
-        .where('gif.gif_uuid = :uuid', { uuid: gifUuid })
+        .where('gif.gif_uuid = :gifUuid', { gifUuid })
         .getOne();
 
       return giftcard;
