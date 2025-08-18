@@ -1,8 +1,16 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { GiftcardService } from './giftcard.service';
 import {
+  actualizarGiftcard,
   crearGiftcard,
-  obtenerGiftcard,
   obtenerGifUsuario,
 } from './dto/giftcard.dto';
 
@@ -20,8 +28,13 @@ export class GiftcardController {
     return await this._giftcardService.obtenerGiftcardsXUsuario(data);
   }
 
+  @Patch()
+  async actualizarGiftcard(@Body() giftcard: actualizarGiftcard) {
+    return await this._giftcardService.actualizarGiftcard(giftcard);
+  }
+
   @Get(':gifUuid')
-  async obtenerGiftcard(@Param() data: obtenerGiftcard) {
-    return await this._giftcardService.obtenerGiftcard(data);
+  async obtenerGiftcard(@Param('gifUuid') gifUuid: string) {
+    return await this._giftcardService.obtenerGiftcard(gifUuid);
   }
 }

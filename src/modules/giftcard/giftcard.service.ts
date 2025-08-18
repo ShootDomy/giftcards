@@ -3,11 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Giftcard } from './giftcard.entity';
 import { Repository } from 'typeorm';
 import {
+  actualizarGiftcard,
   crearGiftcard,
-  obtenerGiftcard,
   obtenerGifUsuario,
 } from './dto/giftcard.dto';
 import { DateTime } from 'luxon';
+import { utilResponse } from 'src/utils/utilResponse';
 
 @Injectable()
 export class GiftcardService {
@@ -138,7 +139,7 @@ export class GiftcardService {
     }
   }
 
-  async obtenerGiftcard(data: obtenerGiftcard) {
+  async obtenerGiftcard(gifUuid: string) {
     try {
       const giftcard = await this._giftcardRepository
         .createQueryBuilder('gif')
@@ -150,7 +151,7 @@ export class GiftcardService {
           'gif.gifExpiracion',
           'gif.usuUuid',
         ])
-        .where('gif.gif_uuid = :uuid', { uuid: data.gifUuid })
+        .where('gif.gif_uuid = :uuid', { uuid: gifUuid })
         .getOne();
 
       return giftcard;
@@ -158,6 +159,59 @@ export class GiftcardService {
       if (error.driverError) {
         throw new HttpException(
           'Error al obtener el Giftcard',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async actualizarGiftcard(giftcard: actualizarGiftcard) {
+    try {
+      // Obtener Giftcard existente
+      const gift = await this.obtenerGiftcard(giftcard.gifUuid);
+
+      if (!gift) {
+        throw new HttpException('Giftcard no encontrada', HttpStatus.NOT_FOUND);
+      }
+
+      //Validacion de fecha de expiracion
+      const fechaActual = DateTime.now();
+      if (
+        giftcard.gifExpiracion &&
+        giftcard.gifExpiracion < fechaActual.toISO()
+      ) {
+        throw new HttpException(
+          'La fecha de expiración no puede ser menor a la fecha actual',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      // Validacion de saldo mayor a 0
+      if (giftcard.gifSaldo && giftcard.gifSaldo <= 0) {
+        throw new HttpException(
+          'El saldo debe ser mayor a 0',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const data: Partial<Giftcard> = {
+        gifNombre: giftcard.gifNombre ? giftcard.gifNombre : gift.gifNombre,
+        gifSaldo: giftcard.gifSaldo ? giftcard.gifSaldo : gift.gifSaldo,
+        gifMoneda: giftcard.gifMoneda ? giftcard.gifMoneda : gift.gifMoneda,
+        gifExpiracion: giftcard.gifExpiracion
+          ? giftcard.gifExpiracion
+          : gift.gifExpiracion,
+      };
+
+      console.log('Data to update:', data);
+      await this._giftcardRepository.update(giftcard.gifUuid, data);
+
+      return new utilResponse().setSuccess();
+    } catch (error) {
+      if (error.driverError) {
+        throw new HttpException(
+          'Error al actualizar el Giftcard',
           HttpStatus.BAD_REQUEST,
         );
       }

@@ -51,3 +51,29 @@ export class obtenerGiftcard {
   @IsNotEmpty()
   gifUuid: string;
 }
+
+@Expose()
+export class actualizarGiftcard {
+  @IsNotEmpty()
+  gifUuid: string;
+
+  @IsOptional()
+  gifNombre: string;
+
+  @IsOptional()
+  gifSaldo: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  gifMoneda: string;
+
+  @Transform(({ value }) => {
+    const dt = DateTime.fromISO(value);
+    if (!dt.isValid) {
+      return null;
+    }
+    return dt;
+  })
+  gifExpiracion: DateTime;
+}
