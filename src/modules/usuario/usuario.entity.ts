@@ -3,8 +3,10 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   UpdateDateColumn,
 } from 'typeorm';
+import { Giftcard } from '../giftcard/giftcard.entity';
 
 @Entity('usuario', { schema: 'public' })
 export class Usuario {
@@ -54,4 +56,7 @@ export class Usuario {
     type: 'timestamp with time zone',
   })
   deletedAt: Date | null;
+
+  @OneToMany(() => Giftcard, (giftcard) => giftcard.usuUuid)
+  giftcards: Giftcard[];
 }

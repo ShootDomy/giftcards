@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import Joi from 'joi';
 import { DatabaseModule } from './database/database.module';
 import { UsuarioModule } from './modules/usuario/usuario.module';
+import { GiftcardModule } from './modules/giftcard/giftcard.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { UsuarioModule } from './modules/usuario/usuario.module';
     }),
     DatabaseModule,
     UsuarioModule,
+    GiftcardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
