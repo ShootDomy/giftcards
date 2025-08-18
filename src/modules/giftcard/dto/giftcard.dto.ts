@@ -1,5 +1,5 @@
 import { Expose, Transform } from 'class-transformer';
-import { IsNotEmpty, IsNumber, Min } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, Min } from 'class-validator';
 import { DateTime } from 'luxon';
 
 @Expose()
@@ -26,4 +26,28 @@ export class crearGiftcard {
 
   @IsNotEmpty()
   usuUuid: string;
+}
+
+@Expose()
+export class obtenerGifUsuario {
+  @IsNotEmpty()
+  usuUuid: string;
+
+  @IsOptional()
+  gifNombre: string;
+
+  @IsOptional()
+  uuidOrigen: string;
+
+  @IsOptional()
+  gifMoneda: string;
+
+  @IsOptional()
+  estado: string;
+}
+
+@Expose()
+export class obtenerGiftcard {
+  @IsNotEmpty()
+  gifUuid: string;
 }
