@@ -225,7 +225,6 @@ export class GiftcardService {
 
   async eliminarGiftcard(gifUuid: string) {
     try {
-      console.log('Data to delete:', gifUuid);
       const gift = await this.obtenerGiftcard(gifUuid);
 
       if (!gift) {
@@ -239,6 +238,65 @@ export class GiftcardService {
       if (error.driverError) {
         throw new HttpException(
           'Error al eliminar el Giftcard',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async transferirGiftcard(data: transferirGiftcard) {
+    try {
+      /**
+       * * Validaciones
+       */
+      // Existe gift origen
+      const giftOrigen = await this.obtenerGiftcard(data.gifUuidOrigen);
+
+      if (!giftOrigen) {
+        throw new HttpException(
+          'Giftcard origen no encontrada',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      // Existe gift destino
+      const giftDestino = await this.obtenerGiftcard(data.gifUuidDestino);
+
+      if (!giftDestino) {
+        throw new HttpException(
+          'Giftcard destino no encontrada',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      // Validacion de saldo
+      if (giftOrigen.gifSaldo < data.monto) {
+        throw new HttpException(
+          'Saldo insuficiente en la giftcard',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      // Validacion saldo positivo
+      if (data.monto <= 0) {
+        throw new HttpException(
+          'El monto a transferir debe ser mayor a 0',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      // Transferir saldo
+      giftOrigen.gifSaldo -= data.monto;
+      giftDestino.gifSaldo += data.monto;
+
+      await this._giftcardRepository.save([giftOrigen, giftDestino]);
+
+      return new utilResponse().setSuccess();
+    } catch (error) {
+      if (error.driverError) {
+        throw new HttpException(
+          'Error al transferir el Giftcard',
           HttpStatus.BAD_REQUEST,
         );
       }

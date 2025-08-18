@@ -13,6 +13,7 @@ import {
   actualizarGiftcard,
   crearGiftcard,
   obtenerGifUsuario,
+  transferirGiftcard,
 } from './dto/giftcard.dto';
 
 @Controller('giftcard')
@@ -37,6 +38,11 @@ export class GiftcardController {
   @Delete(':gifUuid')
   async eliminarGiftcard(@Param('gifUuid') gifUuid: string) {
     return await this._giftcardService.eliminarGiftcard(gifUuid);
+  }
+
+  @Post('transferir')
+  async transferirGiftcard(@Body() data: transferirGiftcard) {
+    return await this._giftcardService.transferirGiftcard(data);
   }
 
   @Get(':gifUuid')
