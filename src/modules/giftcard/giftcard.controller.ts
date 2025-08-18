@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -31,6 +32,11 @@ export class GiftcardController {
   @Patch()
   async actualizarGiftcard(@Body() giftcard: actualizarGiftcard) {
     return await this._giftcardService.actualizarGiftcard(giftcard);
+  }
+
+  @Delete(':gifUuid')
+  async eliminarGiftcard(@Param('gifUuid') gifUuid: string) {
+    return await this._giftcardService.eliminarGiftcard(gifUuid);
   }
 
   @Get(':gifUuid')

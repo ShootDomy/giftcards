@@ -77,3 +77,18 @@ export class actualizarGiftcard {
   })
   gifExpiracion: DateTime;
 }
+
+@Expose()
+export class transferirGiftcard {
+  @IsNotEmpty()
+  usuUuid: string;
+
+  @IsNotEmpty()
+  gifUuidOrigen: string;
+
+  @IsNotEmpty()
+  gifUuidDestino: string;
+
+  @IsNotEmpty()
+  monto: number;
+}

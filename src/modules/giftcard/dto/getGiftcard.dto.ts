@@ -30,3 +30,19 @@ export class getGiftcardDto {
   @Expose({ name: 'mostrar' })
   mostrar: string;
 }
+
+@Exclude()
+export class getGiftcardUnoDto {
+  gifUuid: string;
+
+  gifNombre: string;
+
+  @Transform(({ value }) => (value ? Number(Number(value).toFixed(2)) : 0))
+  gifSaldo: number;
+
+  gifMoneda: string;
+
+  gifExpiracion: string;
+
+  usuUuid: string;
+}

@@ -6,6 +6,7 @@ import {
   actualizarGiftcard,
   crearGiftcard,
   obtenerGifUsuario,
+  transferirGiftcard,
 } from './dto/giftcard.dto';
 import { DateTime } from 'luxon';
 import { utilResponse } from 'src/utils/utilResponse';
@@ -98,7 +99,7 @@ export class GiftcardService {
       const giftcards = await this._giftcardRepository.query(`
         WITH giftcards AS (
           SELECT gif_uuid, gif_nombre, gif_saldo, gif_moneda, 
-            TO_CHAR(gif_expiracion::DATE, 'YYYY-MM-DD')::DATE gif_expiracion,
+            TO_CHAR(gif_expiracion::DATE, 'YYYY-MM-DD') gif_expiracion,
             usu_uuid,
             CASE
               WHEN TO_CHAR(gif_expiracion::DATE, 'YYYY-MM-DD')::DATE > date('now') THEN FALSE
@@ -110,7 +111,8 @@ export class GiftcardService {
               ELSE FALSE
           END AS a_tiempo
           FROM giftcard
-          WHERE usu_uuid = '${data.usuUuid}' ${condicion}
+          WHERE usu_uuid = '${data.usuUuid}' AND deleted_at ISNULL
+            ${condicion}
         ), num_moneda AS (
           SELECT COUNT(*) total, gif_moneda FROM giftcard GROUP BY gif_moneda
         ), datos AS (
@@ -214,6 +216,29 @@ export class GiftcardService {
       if (error.driverError) {
         throw new HttpException(
           'Error al actualizar el Giftcard',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async eliminarGiftcard(gifUuid: string) {
+    try {
+      console.log('Data to delete:', gifUuid);
+      const gift = await this.obtenerGiftcard(gifUuid);
+
+      if (!gift) {
+        throw new HttpException('Giftcard no encontrada', HttpStatus.NOT_FOUND);
+      }
+
+      await this._giftcardRepository.softDelete(gifUuid);
+
+      return new utilResponse().setSuccess();
+    } catch (error) {
+      if (error.driverError) {
+        throw new HttpException(
+          'Error al eliminar el Giftcard',
           HttpStatus.BAD_REQUEST,
         );
       }
