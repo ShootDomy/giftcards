@@ -5,12 +5,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Usuario } from './usuario.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   controllers: [UsuarioController],
-  providers: [UsuarioService, ConfigService],
+  providers: [UsuarioService, ConfigService, JwtStrategy],
   imports: [
     TypeOrmModule.forFeature([Usuario]),
+    PassportModule,
     JwtModule.registerAsync({
       imports: [],
       inject: [ConfigService],

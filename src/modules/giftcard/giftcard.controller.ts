@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { GiftcardService } from './giftcard.service';
 import {
@@ -15,8 +16,10 @@ import {
   obtenerGifUsuario,
   transferirGiftcard,
 } from './dto/giftcard.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('giftcard')
+@UseGuards(AuthGuard('jwt'))
 export class GiftcardController {
   constructor(private readonly _giftcardService: GiftcardService) {}
 

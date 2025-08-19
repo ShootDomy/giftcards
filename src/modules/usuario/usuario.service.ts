@@ -116,7 +116,7 @@ export class UsuarioService {
       };
 
       return {
-        access_token: this._jwtService.sign(tokenPayload),
+        token: this._jwtService.sign(tokenPayload),
       };
     } catch (error) {
       if (error.driverError) {
