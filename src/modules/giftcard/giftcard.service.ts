@@ -287,8 +287,11 @@ export class GiftcardService {
       }
 
       // Transferir saldo
-      giftOrigen.gifSaldo -= data.monto;
-      giftDestino.gifSaldo += data.monto;
+      giftOrigen.gifSaldo = Number(giftOrigen.gifSaldo) - Number(data.monto);
+      giftDestino.gifSaldo = Number(giftDestino.gifSaldo) + Number(data.monto);
+
+      // console.log('giftOrigen', giftOrigen);
+      // console.log('giftDestino', giftDestino);
 
       await this._giftcardRepository.save([giftOrigen, giftDestino]);
 
